@@ -1,28 +1,22 @@
-export function formatData(data) {
-    return data.map(item => ({
-        id: item.id,
-        name: item.name.trim(),
-        value: parseFloat(item.value) || 0
-    }));
+function handleErrors(fn) {
+    return async function(...args) {
+        try {
+            return await fn(...args);
+        } catch (error) {
+            console.error('Error occurred:', error);
+            throw new Error('Failed to execute' + fn.name);
+        }
+    };
 }
 
-export function filterValidData(data) {
-    return data.filter(item => item.value > 0);
-}
-
-export async function fetchData(url) {
-    const response = await fetch(url);
+async function fetchData(apiUrl) {
+    const response = await fetch(apiUrl);
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
-    const data = await response.json();
-    return data;
+    return response.json();
 }
 
-export function aggregateData(data) {
-    return data.reduce((acc, item) => acc + item.value, 0);
-}
+const safeFetchData = handleErrors(fetchData);
 
-export function sortData(data, key) {
-    return data.sort((a, b) => a[key] > b[key] ? 1 : -1);
-}
+export { safeFetchData };
