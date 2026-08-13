@@ -1,1 +1,15 @@
-function debounce(func, delay) { let timeout; return function(...args) { const context = this; clearTimeout(timeout); timeout = setTimeout(() => func.apply(context, args), delay); }; } function throttle(func, limit) { let lastFunc; let lastRan; return function() { const context = this; const args = arguments; if (!lastRan) { func.apply(context, args); lastRan = Date.now(); } else { clearTimeout(lastFunc); lastFunc = setTimeout(function() { if ((Date.now() - lastRan) >= limit) { func.apply(context, args); lastRan = Date.now(); } }, limit - (Date.now() - lastRan)); } }; } function isEmpty(obj) { return Object.keys(obj).length === 0; } function mergeDeep(target, source) { for (const key in source) { if (source[key] instanceof Object) Object.assign(source[key], mergeDeep(target[key], source[key])); } Object.assign(target || {}, source); return target; } export { debounce, throttle, isEmpty, mergeDeep };
+async function fetchWithRetries(url, options = {}, retries = 3, delay = 1000) {
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return await response.json();
+    } catch (error) {
+        if (retries > 0) {
+            await new Promise(res => setTimeout(res, delay));
+            return fetchWithRetries(url, options, retries - 1, delay);
+        }
+        throw error;
+    }
+}
+
+export { fetchWithRetries };
