@@ -1,15 +1,1 @@
-async function fetchWithRetries(url, options = {}, retries = 3, delay = 1000) {
-    try {
-        const response = await fetch(url, options);
-        if (!response.ok) throw new Error('Network response was not ok');
-        return await response.json();
-    } catch (error) {
-        if (retries > 0) {
-            await new Promise(res => setTimeout(res, delay));
-            return fetchWithRetries(url, options, retries - 1, delay);
-        }
-        throw error;
-    }
-}
-
-export { fetchWithRetries };
+type User = { id: number; username: string; displayName: string; }; type Response<T> = { data: T; error?: string; }; const getUser = async (userId: number): Promise<Response<User>> => { try { const response = await fetch(`https://api.roblox.com/users/${userId}`); if (!response.ok) throw new Error('Network response was not ok'); const data: User = await response.json(); return { data }; } catch (error) { return { data: null, error: error.message }; } }; const formatUsername = (user: User): string => { return `${user.displayName} (${user.username})`; }; export { getUser, formatUsername };
