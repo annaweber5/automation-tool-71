@@ -1,27 +1,29 @@
-const fs = require('fs');
-
 class Logger {
-    constructor(logFile) {
-        this.logFile = logFile;
+    constructor(name) {
+        this.name = name;
+        this.logs = [];
     }
 
     log(message) {
         const timestamp = new Date().toISOString();
-        const logMessage = `${timestamp} - ${message}\n`;
-        fs.appendFileSync(this.logFile, logMessage);
+        const logEntry = `${timestamp} [${this.name}]: ${message}`;
+        this.logs.push(logEntry);
+        console.log(logEntry);
     }
 
-    error(message) {
-        this.log(`ERROR: ${message}`);
+    getLogs() {
+        return this.logs;
     }
 
-    info(message) {
-        this.log(`INFO: ${message}`);
+    clearLogs() {
+        this.logs = [];
     }
 
-    warn(message) {
-        this.log(`WARN: ${message}`);
+    static error(message) {
+        const timestamp = new Date().toISOString();
+        console.error(`${timestamp} [ERROR]: ${message}`);
     }
 }
 
-module.exports = Logger;
+const logger = new Logger('AutomationTool');
+export default logger;
