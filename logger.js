@@ -18,12 +18,8 @@ class Logger {
     clearLogs() {
         this.logs = [];
     }
-
-    static error(message) {
-        const timestamp = new Date().toISOString();
-        console.error(`${timestamp} [ERROR]: ${message}`);
-    }
 }
 
 const logger = new Logger('AutomationTool');
+
 export default logger;
