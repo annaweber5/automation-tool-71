@@ -1,28 +1,22 @@
 const axios = require('axios');
 
-const BASE_URL = 'https://api.roblox.com';
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
 
-const fetchRobloxData = async (endpoint) => {
-    try {
-        const response = await axios.get(`${BASE_URL}${endpoint}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching data from Roblox:', error);
-        throw new Error('Failed to fetch data');
+async function fetchWithRetry(url) {
+    let attempts = 0;
+    while (attempts < MAX_RETRIES) {
+        try {
+            const response = await axios.get(url);
+            return response.data;
+        } catch (error) {
+            attempts++;
+            if (attempts >= MAX_RETRIES) {
+                throw new Error(`Failed after ${MAX_RETRIES} attempts: ${error.message}`);
+            }
+            await new Promise(res => setTimeout(res, RETRY_DELAY));
+        }
     }
-};
+}
 
-const formatRobloxUserData = (data) => {
-    return {
-        id: data.Id,
-        username: data.Username,
-        displayName: data.DisplayName,
-        avatarUrl: data.AvatarUrl
-    };
-};
-
-const isValidUserId = (userId) => {
-    return typeof userId === 'number' && userId > 0;
-};
-
-module.exports = { fetchRobloxData, formatRobloxUserData, isValidUserId };
+module.exports = { fetchWithRetry };
