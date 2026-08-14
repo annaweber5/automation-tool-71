@@ -2,19 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 const defaultConfig = {
-    host: 'localhost',
-    port: 3000,
-    db: 'mongodb://localhost:27017/mydb',
+    baseURL: 'https://api.roblox.com',
+    timeout: 5000,
+    retryAttempts: 3,
     logLevel: 'info'
 };
 
-function loadConfig(configPath) {
-    const fullPath = path.resolve(configPath);
-    if (fs.existsSync(fullPath)) {
-        const userConfig = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
-        return { ...defaultConfig, ...userConfig };
+function loadConfig(filePath) {
+    const fullPath = path.resolve(__dirname, filePath);
+    if (!fs.existsSync(fullPath)) {
+        return defaultConfig;
     }
-    return defaultConfig;
+    const userConfig = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+    return { ...defaultConfig, ...userConfig };
 }
 
 module.exports = { loadConfig };
