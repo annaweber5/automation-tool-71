@@ -1,17 +1,16 @@
-# automation-tool-71
+# Automation Tool 71
 
-Automation-tool-71 is a powerful JavaScript utility designed to streamline the development process for Roblox game creators. With this tool, users can automate repetitive tasks, improve workflow efficiency, and enhance their overall game development experience.
+Automation Tool 71 is a powerful JavaScript utility designed specifically for automating various tasks in Roblox game development. Streamline your workflow by utilizing this tool to enhance the efficiency and productivity of your scripting endeavors.
 
 ## Features
-
-- **Script Automation**: Automatically generate and run scripts within Roblox Studio, saving valuable time and reducing repetitive manual entries.
-- **Asset Management**: Easily organize, upload, and update game assets directly from the command line, ensuring your projects stay tidy and up-to-date.
-- **Performance Monitoring**: Integrated performance analytics that help identify bottlenecks and optimize game performance in real time.
-- **Custom Commands**: Build and register custom commands tailored to your specific development needs, making the tool highly adaptable for diverse workflows.
+- **Script Automation**: Instantly execute and manage multiple scripts in your Roblox projects without manual intervention.
+- **Event Listener Integration**: Seamlessly listen for and respond to in-game events, enabling real-time automation for gameplay elements.
+- **Error Logging**: Automatically log and report errors during script execution, simplifying debugging and improving code quality.
+- **Customizable Settings**: Easily modify settings to suit your specific project requirements, allowing for tailored automation solutions.
 
 ## Installation
 
-To get started with automation-tool-71, clone the repository and install the dependencies using Node Package Manager (npm):
+To get started with Automation Tool 71, clone the repository and install the required dependencies using npm:
 
 ```bash
 git clone https://github.com/Developer/automation-tool-71.git
@@ -21,20 +20,27 @@ npm install
 
 ## Basic Usage Example
 
-After installation, you can use the tool via the command line. For example, to generate a default script template:
+Once installed, you can start using Automation Tool 71 in your Roblox project by initializing it in your main script. Here’s a simple example:
 
-```bash
-node automation-tool.js create-script "MyNewScript"
+```javascript
+const Automation = require('automation-tool-71');
+
+// Initialize the automation tool
+const auto = new Automation();
+
+// Set up an event listener
+auto.on('PlayerAdded', (player) => {
+    console.log(`New player joined: ${player.Name}`);
+});
+
+// Execute a script
+auto.runScript('path/to/yourScript.lua');
 ```
 
-This command will create a new script file named `MyNewScript.lua` in your specified directory, ready for you to edit and enhance.
+This code listens for new players joining the game and executes a specified script automatically.
 
 ## License
 
-![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/Developer/automation-tool-71/blob/main/LICENSE) file for details.
-
----
-
-Leverage the power of automation-tool-71 to enhance your Roblox development workflow and spend more time on creativity and less on mundane tasks!
+For more details on how to use this tool effectively, please refer to the documentation within the repository. Your contributions and feedback are warmly welcomed!
