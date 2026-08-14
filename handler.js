@@ -1,29 +1,22 @@
-const axios = require('axios');
-
-class RobloxDataHandler {
-    constructor(baseApiUrl) {
-        this.baseApiUrl = baseApiUrl;
+class Handler {
+    constructor(eventEmitter) {
+        this.eventEmitter = eventEmitter;
+        this.bindEvents();
     }
-
-    async fetchGameData(gameId) {
-        try {
-            const response = await axios.get(`${this.baseApiUrl}/games/${gameId}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching game data:', error);
-            throw new Error('Failed to fetch game data');
-        }
+    bindEvents() {
+        this.eventEmitter.on('start', this.onStart.bind(this));
+        this.eventEmitter.on('stop', this.onStop.bind(this));
     }
-
-    async fetchUserData(userId) {
-        try {
-            const response = await axios.get(`${this.baseApiUrl}/users/${userId}`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            throw new Error('Failed to fetch user data');
-        }
+    onStart(data) {
+        console.log('Handler started with data:', data);
+    }
+    onStop() {
+        console.log('Handler stopped');
+    }
+    dispose() {
+        this.eventEmitter.off('start', this.onStart);
+        this.eventEmitter.off('stop', this.onStop);
     }
 }
 
-module.exports = RobloxDataHandler;
+module.exports = Handler;
