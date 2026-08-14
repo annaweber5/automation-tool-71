@@ -1,22 +1,22 @@
-const axios = require('axios');
+const fetch = require('node-fetch');
 
-const MAX_RETRIES = 3;
+const RETRY_LIMIT = 3;
 const RETRY_DELAY = 1000;
 
-async function fetchWithRetry(url) {
-    let attempts = 0;
-    while (attempts < MAX_RETRIES) {
-        try {
-            const response = await axios.get(url);
-            return response.data;
-        } catch (error) {
-            attempts++;
-            if (attempts >= MAX_RETRIES) {
-                throw new Error(`Failed after ${MAX_RETRIES} attempts: ${error.message}`);
-            }
-            await new Promise(res => setTimeout(res, RETRY_DELAY));
-        }
+async function fetchWithRetry(url, options = {}, retries = RETRY_LIMIT) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    return await response.json();
+  } catch (error) {
+    if (retries === 0) {
+      throw error;
+    }
+    await new Promise(res => setTimeout(res, RETRY_DELAY));
+    return fetchWithRetry(url, options, retries - 1);
+  }
 }
 
 module.exports = { fetchWithRetry };
