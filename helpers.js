@@ -1,18 +1,43 @@
-function calculateDistance(pointA: { x: number; y: number }, pointB: { x: number; y: number }): number {
-    const dx = pointB.x - pointA.x;
-    const dy = pointB.y - pointA.y;
-    return Math.sqrt(dx * dx + dy * dy);
+function debounce(func, delay) {
+  let timer;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(context, args), delay);
+  };
 }
 
-function findClosestPoint(points: Array<{ x: number; y: number }>, target: { x: number; y: number }): { x: number; y: number } {
-    return points.reduce((closest, point) => {
-        const distanceToClosest = calculateDistance(closest, target);
-        const distanceToCurrent = calculateDistance(point, target);
-        return distanceToCurrent < distanceToClosest ? point : closest;
-    });
+function throttle(func, limit) {
+  let lastFunc;
+  let lastRan;
+  return function(...args) {
+    const context = this;
+    if (!lastRan) {
+      func.apply(context, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
 }
 
-function isPointInCircle(point: { x: number; y: number }, circle: { center: { x: number; y: number }; radius: number }): boolean {
-    const distance = calculateDistance(point, circle.center);
-    return distance <= circle.radius;
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
 }
+
+export { debounce, throttle, memoize };
