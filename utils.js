@@ -1,22 +1,28 @@
-function handleErrors(fn) {
-    return async function(...args) {
-        try {
-            return await fn(...args);
-        } catch (error) {
-            console.error('Error occurred:', error);
-            throw new Error('Failed to execute' + fn.name);
-        }
-    };
-}
+const axios = require('axios');
 
-async function fetchData(apiUrl) {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
+const BASE_URL = 'https://api.roblox.com';
+
+const fetchRobloxData = async (endpoint) => {
+    try {
+        const response = await axios.get(`${BASE_URL}${endpoint}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching data from Roblox:', error);
+        throw new Error('Failed to fetch data');
     }
-    return response.json();
-}
+};
 
-const safeFetchData = handleErrors(fetchData);
+const formatRobloxUserData = (data) => {
+    return {
+        id: data.Id,
+        username: data.Username,
+        displayName: data.DisplayName,
+        avatarUrl: data.AvatarUrl
+    };
+};
 
-export { safeFetchData };
+const isValidUserId = (userId) => {
+    return typeof userId === 'number' && userId > 0;
+};
+
+module.exports = { fetchRobloxData, formatRobloxUserData, isValidUserId };
