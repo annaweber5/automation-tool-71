@@ -1,1 +1,18 @@
-type User = { id: number; username: string; displayName: string; }; type Response<T> = { data: T; error?: string; }; const getUser = async (userId: number): Promise<Response<User>> => { try { const response = await fetch(`https://api.roblox.com/users/${userId}`); if (!response.ok) throw new Error('Network response was not ok'); const data: User = await response.json(); return { data }; } catch (error) { return { data: null, error: error.message }; } }; const formatUsername = (user: User): string => { return `${user.displayName} (${user.username})`; }; export { getUser, formatUsername };
+function calculateDistance(pointA: { x: number; y: number }, pointB: { x: number; y: number }): number {
+    const dx = pointB.x - pointA.x;
+    const dy = pointB.y - pointA.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function findClosestPoint(points: Array<{ x: number; y: number }>, target: { x: number; y: number }): { x: number; y: number } {
+    return points.reduce((closest, point) => {
+        const distanceToClosest = calculateDistance(closest, target);
+        const distanceToCurrent = calculateDistance(point, target);
+        return distanceToCurrent < distanceToClosest ? point : closest;
+    });
+}
+
+function isPointInCircle(point: { x: number; y: number }, circle: { center: { x: number; y: number }; radius: number }): boolean {
+    const distance = calculateDistance(point, circle.center);
+    return distance <= circle.radius;
+}
