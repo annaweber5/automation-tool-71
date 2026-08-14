@@ -1,43 +1,31 @@
-function debounce(func, delay) {
-  let timer;
-  return function(...args) {
-    const context = this;
-    clearTimeout(timer);
-    timer = setTimeout(() => func.apply(context, args), delay);
-  };
-}
-
-function throttle(func, limit) {
-  let lastFunc;
-  let lastRan;
-  return function(...args) {
-    const context = this;
-    if (!lastRan) {
-      func.apply(context, args);
-      lastRan = Date.now();
-    } else {
-      clearTimeout(lastFunc);
-      lastFunc = setTimeout(() => {
-        if (Date.now() - lastRan >= limit) {
-          func.apply(context, args);
-          lastRan = Date.now();
-        }
-      }, limit - (Date.now() - lastRan));
+function safeParseJSON(jsonString) {
+    try {
+        const result = JSON.parse(jsonString);
+        return { success: true, data: result };
+    } catch (error) {
+        return { success: false, error: 'Invalid JSON' };
     }
-  };
 }
 
-function memoize(fn) {
-  const cache = new Map();
-  return function(...args) {
-    const key = JSON.stringify(args);
-    if (cache.has(key)) {
-      return cache.get(key);
+function validateUserInput(input) {
+    if (typeof input !== 'string' || input.trim() === '') {
+        throw new Error('Invalid input: must be a non-empty string');
     }
-    const result = fn(...args);
-    cache.set(key, result);
-    return result;
-  };
+    return true;
 }
 
-export { debounce, throttle, memoize };
+function fetchData(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            return { success: false, error: error.message };
+        });
+}
+
+module.exports = { safeParseJSON, validateUserInput, fetchData };
