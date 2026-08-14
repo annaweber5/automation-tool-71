@@ -1,25 +1,39 @@
-class Logger {
-    constructor(name) {
-        this.name = name;
-        this.logs = [];
-    }
+const fs = require('fs');
+const path = require('path');
+const { createLogger, format, transports } = require('winston');
 
-    log(message) {
-        const timestamp = new Date().toISOString();
-        const logEntry = `${timestamp} [${this.name}]: ${message}`;
-        this.logs.push(logEntry);
-        console.log(logEntry);
-    }
-
-    getLogs() {
-        return this.logs;
-    }
-
-    clearLogs() {
-        this.logs = [];
-    }
+const logDirectory = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
 }
 
-const logger = new Logger('AutomationTool');
+const options = {
+    file: {
+        level: 'info',
+        filename: path.join(logDirectory, 'combined-%DATE%.log'),
+        datePattern: 'YYYY-MM-DD',
+        zippedArchive: true,
+        maxSize: '20m',
+        maxFiles: '14d',
+        format: format.combine(
+            format.timestamp(),
+            format.json()
+        )
+    },
+    console: {
+        level: 'debug',
+        format: format.combine(
+            format.colorize(),
+            format.simple()
+        )
+    }
+};
 
-export default logger;
+const logger = createLogger({
+    transports: [
+        new transports.File(options.file),
+        new transports.Console(options.console)
+    ]
+});
+
+module.exports = logger;
