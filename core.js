@@ -1,21 +1,30 @@
-const validateInput = (input) => {
-    if (typeof input !== 'string') return false;
-    const validInputs = ['start', 'stop', 'pause', 'reset'];
-    return validInputs.includes(input);
-};
+class PerformanceOptimizer {
+    constructor() {
+        this.dataCache = {};
+    }
 
-const mainLoop = () => {
-    const inputs = ['start', 'next', 'pause', 'stop'];
-
-    inputs.forEach(input => {
-        if (validateInput(input)) {
-            console.log(
-                `Processing command: ${input}`
-            );
-        } else {
-            console.error(`Invalid input: ${input}`);
+    optimizeData(data) {
+        const key = this._generateKey(data);
+        if (this.dataCache[key]) {
+            return this.dataCache[key];
         }
-    });
-};
+        const optimized = this._processData(data);
+        this.dataCache[key] = optimized;
+        return optimized;
+    }
 
-mainLoop();
+    _generateKey(data) {
+        return JSON.stringify(data);
+    }
+
+    _processData(data) {
+        return data.map(item => {
+            return {
+                id: item.id,
+                value: item.value * 2 
+            };
+        });
+    }
+}
+
+module.exports = new PerformanceOptimizer();
