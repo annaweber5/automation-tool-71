@@ -2,19 +2,22 @@ const fs = require('fs');
 const path = require('path');
 
 const defaultConfig = {
-    baseURL: 'https://api.roblox.com',
-    timeout: 5000,
+    apiUrl: 'https://api.example.com',
     retryAttempts: 3,
-    logLevel: 'info'
+    timeout: 5000,
+    features: {
+        logging: true,
+        debugging: false
+    }
 };
 
-function loadConfig(filePath) {
-    const fullPath = path.resolve(__dirname, filePath);
-    if (!fs.existsSync(fullPath)) {
-        return defaultConfig;
+function loadConfig(customConfigPath) {
+    const configPath = customConfigPath || path.join(__dirname, 'config.json');
+    if (fs.existsSync(configPath)) {
+        const customConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        return { ...defaultConfig, ...customConfig };
     }
-    const userConfig = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-    return { ...defaultConfig, ...userConfig };
+    return defaultConfig;
 }
 
-module.exports = { loadConfig };
+module.exports = loadConfig;
