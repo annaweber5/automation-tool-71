@@ -1,49 +1,51 @@
-# Automation Tool 71
+# automation-tool-71
 
-Automation Tool 71 is a powerful JavaScript library designed specifically for automating Roblox game tasks. Easily streamline repetitive processes, enhance game performance, and improve your gameplay experience with our intuitive tool.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A lightweight Node.js utility designed to automate place publishing, asset uploading, and DataStore synchronization via the Roblox Open Cloud API. It provides a clean programatic interface for developers to integrate automated CI/CD workflows into their Roblox Studio deployment pipelines.
 
 ## Features
 
-- **Script Execution**: Run multiple custom scripts simultaneously to automate in-game actions and tasks without manual input.
-- **Event Listening**: Seamlessly listen to specific Roblox events, such as player joins or game state changes, allowing for responsive automation.
-- **User-Friendly API**: A clean, well-documented API that simplifies automation workflows for both novice and experienced developers.
-- **Cross-Platform Compatibility**: Works with leading browsers and platforms supporting Roblox, ensuring your automation runs wherever you play.
+- **Automated Place Publishing:** Deploy binary (`.rbxl`) or XML (`.rbxlx`) place files directly to live or staging Roblox universes.
+- **DataStore Sync & Backup:** Programmatically fetch, update, and back up DataStore entries with automatic rate-limit handling and exponential backoff.
+- **Asset Upload Pipeline:** Bulk upload decals, audio, and mesh assets while returning structured JSON output containing created Asset IDs.
+- **API Key Security:** Native support for Roblox Open Cloud API keys, eliminating the security risks associated with legacy cookie-based authentication.
 
 ## Installation
 
-To get started with Automation Tool 71, clone the repository and install the required dependencies. Use the following commands in your terminal:
+Install the package via npm:
 
 ```bash
-git clone https://github.com/Developer/automation-tool-71.git
-cd automation-tool-71
-npm install
+npm install automation-tool-71
 ```
 
-## Basic Usage
+## Usage Example
 
-Here's a quick example to illustrate how to set up and execute a basic automation script:
+The following example demonstrates how to upload an updated place file to a specific universe using an Open Cloud API key:
 
 ```javascript
-const AutomationTool71 = require('automation-tool-71');
+const { RobloxPublisher } = require('automation-tool-71');
 
-// Initialize the automation tool
-const tool = new AutomationTool71();
-
-// Define a simple automation task
-tool.on('playerJoin', (player) => {
-  console.log(`${player.name} has joined the game!`);
+const publisher = new RobloxPublisher({
+  apiKey: process.env.ROBLOX_API_KEY,
+  universeId: '1234567890',
+  placeId: '0987654321'
 });
 
-// Start the automation
-tool.start();
-```
+async function runDeployment() {
+  try {
+    const response = await publisher.publishPlace('./build/place.rbxl', {
+      versionType: 'Published'
+    });
+    console.log(`Successfully published version ${response.versionNumber}`);
+  } catch (error) {
+    console.error('Deployment failed:', error.message);
+  }
+}
 
-In this example, the tool listens for player join events and logs a message every time a player enters the game.
+runDeployment();
+```
 
 ## License
 
-![MIT License](https://img.shields.io/badge/license-MIT-green) 
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
-
-Explore the potential of Automation Tool 71 and supercharge your Roblox experience today!
+This project is licensed under the MIT License.
