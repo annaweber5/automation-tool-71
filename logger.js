@@ -1,39 +1,31 @@
-const fs = require('fs');
-const path = require('path');
-const { createLogger, format, transports } = require('winston');
+const LOG_LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3 };
+let minLevel = LOG_LEVELS.INFO;
 
-const logDirectory = path.join(__dirname, 'logs');
-if (!fs.existsSync(logDirectory)) {
-    fs.mkdirSync(logDirectory);
-}
+const buffer = [];
+const BUFFER_LIMIT = 100;
 
-const options = {
-    file: {
-        level: 'info',
-        filename: path.join(logDirectory, 'combined-%DATE%.log'),
-        datePattern: 'YYYY-MM-DD',
-        zippedArchive: true,
-        maxSize: '20m',
-        maxFiles: '14d',
-        format: format.combine(
-            format.timestamp(),
-            format.json()
-        )
-    },
-    console: {
-        level: 'debug',
-        format: format.combine(
-            format.colorize(),
-            format.simple()
-        )
-    }
+const flush = () => {
+  if (buffer.length === 0) return;
+  console.log(buffer.join('\n'));
+  buffer.length = 0;
 };
 
-const logger = createLogger({
-    transports: [
-        new transports.File(options.file),
-        new transports.Console(options.console)
-    ]
-});
+const log = (level, message) => {
+  if (LOG_LEVELS[level] < minLevel) return;
 
-module.exports = logger;
+  const entry = `[${new Date().toISOString()}] [${level}] ${message}`;
+  buffer.push(entry);
+
+  if (buffer.length >= BUFFER_LIMIT) {
+    flush();
+  }
+};
+
+export const logger = {
+  setLevel: (level) => { minLevel = LOG_LEVELS[level] || 1; },
+  debug: (msg) => log('DEBUG', msg),
+  info: (msg) => log('INFO', msg),
+  warn: (msg) => log('WARN', msg),
+  error: (msg) => log('ERROR', msg),
+  flush
+};
